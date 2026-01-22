@@ -1,0 +1,22 @@
+body {
+    background-color: pink;
+}
+#calc-input {
+    background-color: white;
+    min-width: 300px;
+    text-align: right;
+    padding: 10px;
+}
+
+button.clear {
+    background: red;
+    color: white;
+}
+button.num {
+    background: white;
+    color: black;
+}
+button.op {
+    background: black;
+    color: white;
+}
