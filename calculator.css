@@ -1,22 +1,94 @@
-body {
-    background-color: pink;
+html {
+    height: 100%;
 }
-#calc-input {
-    background-color: white;
-    min-width: 300px;
-    text-align: right;
-    padding: 10px;
+body {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background: lavenderblush;
+    
+}
+.input-container {
+    background-color: lightgray;
+    min-height: 30px;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    margin: 15px;
+    border: solid 2px black;
+    box-shadow: 4px 4px 0px 0px lavender;
+    margin-bottom: 5px;
 }
 
+.widget {
+    display: flex;
+    justify-content: center;
+}
+#calc-input {
+    margin: 0px;
+    padding: 6px;
+}
+button {
+    margin: 5px;
+    height: 60px;
+    width: 55px;
+    font-size: 20px;
+    font-weight: bold;
+    border: solid 2px black;
+    box-shadow: 4px 4px 0px 0px  lavender;
+}
+.calc-body {
+    display: flex;
+    flex-direction: column;
+    background-color: darkgray;
+}
+
+.button-container {
+    margin: 10px;
+    display: grid;
+    justify-content: center;
+
+    grid-template-areas: 
+        "A7 A8 A9 Aplus"
+        "A4 A5 A6 Aminux"
+        "A1 A2 A3 Atimes"
+        "AC A0 AS Adiv";
+    
+}
 button.clear {
     background: red;
     color: white;
+    /* visibility: hidden; */
 }
+
 button.num {
     background: white;
     color: black;
+    /* visibility: hidden; */
 }
 button.op {
     background: black;
     color: white;
+    /* visibility: hidden; */
 }
+
+button.num[value="0"] { grid-area: A0; }
+button.num[value="1"] { grid-area: A1; }
+button.num[value="2"] { grid-area: A2; }
+button.num[value="3"] { grid-area: A3; }
+button.num[value="4"] { grid-area: A4; }
+button.num[value="5"] { grid-area: A5; }
+button.num[value="6"] { grid-area: A6; }
+button.num[value="7"] { grid-area: A7; }
+button.num[value="8"] { grid-area: A8; }
+button.num[value="9"] { grid-area: A9; }
+
+
+button.clear[value="CLEAR"] { grid-area: AC; }
+
+button.op[value="+"] { grid-area: Aplus; }
+button.op[value="-"] { grid-area: Aminux; }
+button.op[value="X"] { grid-area: Atimes; }
+button.op[value="/"] { grid-area: Adiv; }
+button.op[value="SUBMIT"] { grid-area: AS; }

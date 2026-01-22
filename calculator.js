@@ -2,31 +2,121 @@ document.addEventListener("DOMContentLoaded", initializeDocument)
 
 const numClass = "num"
 const opClass = "op"
-const cearClass = "clear"
+const clearClass = "clear"
 const commandClass = "command"
 
-let input;
+const clearCMD = "CLEAR"
+const submitCMD = "SUBMIT"
 
+
+//simple 2-state state machine
+const ParseState = {
+    NUMBERSTART: 0, // number or negative -
+                    // cannot be submitted in this form; means empty or last item is an operation
+
+    NUMBEREND: 1,   // number or operation valid
+                    // can be submitted
+}
+
+// regex for operation with decimals
+const divReg = /(\d+(\.\d+)?)\/(\d+(\.\d+)?)/;
+const multReg = /(\d+(\.\d+)?)×(\d+(\.\d+)?)/;
+const addReg = /(\d+(\.\d+)?)\+(\d+(\.\d+)?)/;
+const subReg = /(\d+(\.\d+)?)\-(\d+(\.\d+)?)/;
+
+//combined into array for iterability
+const RegexArr = [
+    [divReg, function(n1, n2) { return parseFloat(n1) / parseFloat(n2); }],
+    [multReg, function(n1, n2) { return parseFloat(n1) * parseFloat(n2); }],
+    [addReg, function(n1, n2) { return parseFloat(n1) + parseFloat(n2); }],
+    [subReg, function(n1, n2) { return parseFloat(n1) - parseFloat(n2); }],
+]
+
+//regex for key input
+const opReg = /^\/|\+|-$/
+const opRegMult = /^X|x|\*$/
+
+//* variables for state machine and calculator operation
+// input text display
+let input;
+// state machine
+let parseState;
+
+//setup listeners after content loaded
 function initializeDocument() {
-    console.log("brusdfsdfh");
     input = document.getElementById("calc-input")
 
+    document.addEventListener("keyup", keypressed);
 
     for (let button of document.getElementsByClassName("button-container")[0].children) {
-        console.log(button.value);
-        button.addEventListener("click", numpressed)
-        
+        button.addEventListener("click", buttonpressed)
+    }
+    newExpression();
+}
+
+// converts key input into valdiated input
+function keypressed(event) {
+    let key = event.key;
+    if (!isNaN(key)) numpressed(key, false);
+    else if (key === "Enter") numpressed(submitCMD, true);
+    else if (key === "Backspace") numpressed(clearCMD, true);
+    else if (opReg.test(key)) numpressed(key, false);
+    else if (opRegMult.test(key)) numpressed("×", false);
+}
+
+// converts button input into valdiated input
+function buttonpressed(event) {
+    event.target.blur()
+    numpressed(event.target.value, event.target.classList.contains("command"));
+}
+
+// handles validated input
+function numpressed(value, cmd) {
+    console.log(value);
+    // Submitting or clearing
+    if (cmd) {
+        switch (value) {
+            case clearCMD:
+                newExpression();
+                break;
+            case submitCMD:
+                if (parseState != ParseState.NUMBEREND || input.innerHTML.length === 0) return;
+                console.log(input.innerHTML);
+                input.innerHTML = parseExpression(input.innerHTML);
+                parseState = ParseState.NUMBEREND;
+                break;
+        }
+    }
+    // writing to display
+    else {
+        switch(parseState) {
+            case ParseState.NUMBERSTART: //NUMBERSTART only accepts numeric values
+                if (isNaN(value)) return; 
+                else parseState = ParseState.NUMBEREND;
+                break;
+            case ParseState.NUMBEREND: // NUMBEREND accepts any noncommand value (operation/number)
+                if (isNaN(value)) parseState = ParseState.NUMBERSTART;
+                break;
+        }
+        input.innerHTML += value;
     }
 }
 
-function numpressed(event) {
-    console.log(event.target.value);
-    if (event.target.classList.contains("command")) {
-        console.log("CMD!");
+// clear input
+function newExpression() {
+    input.innerHTML = "";
+    parseState = ParseState.NUMBERSTART;
+}
 
-    }
-    else {
-        input.innerHTML += event.target.value;
-    }
 
+// calculate the input. The input should be sanitized due to input rules
+function parseExpression(expression) {
+    if (expression.length === 0) return 0;
+    let regResult;
+    for (let i = 0; i < RegexArr.length; i ++) {
+        while ((regResult = RegexArr[i][0].exec(expression)) != null) {
+            expression = expression.replace(regResult[0], RegexArr[i][1](regResult[1], regResult[3]));
+        }
+    }
+    return parseFloat(expression);
 }
