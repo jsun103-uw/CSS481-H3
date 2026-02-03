@@ -38,6 +38,7 @@ button {
     border: solid 2px black;
     box-shadow: 4px 4px 0px 0px  lavender;
 }
+
 .calc-body {
     display: flex;
     flex-direction: column;
@@ -61,16 +62,24 @@ button.clear {
     color: white;
     /* visibility: hidden; */
 }
+button.clear:focus {
+    background: pink;
+}
 
 button.num {
     background: white;
     color: black;
-    /* visibility: hidden; */
 }
+button.num:focus {
+    background: gray;
+}
+
 button.op {
     background: black;
     color: white;
-    /* visibility: hidden; */
+}
+button.op:focus {
+    background: gray;
 }
 
 button.num[value="0"] { grid-area: A0; }

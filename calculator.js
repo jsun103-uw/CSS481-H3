@@ -39,8 +39,13 @@ const opRegMult = /^X|x|\*$/
 //* variables for state machine and calculator operation
 // input text display
 let input;
+
+// string of input
+let operation;
+
 // state machine
 let parseState;
+
 
 //setup listeners after content loaded
 function initializeDocument() {
@@ -77,13 +82,18 @@ function numpressed(value, cmd) {
     if (cmd) {
         switch (value) {
             case clearCMD:
-                newExpression();
+                //clear everything
+                operation = "";
+                parseState = ParseState.NUMBERSTART;
+                input.innerHTML = operation;
                 break;
             case submitCMD:
                 if (parseState != ParseState.NUMBEREND || input.innerHTML.length === 0) return;
                 console.log(input.innerHTML);
                 input.innerHTML = parseExpression(input.innerHTML);
-                parseState = ParseState.NUMBEREND;
+                // reset operation 
+                operation = "";
+                parseState = ParseState.NUMBERSTART;
                 break;
         }
     }
@@ -92,19 +102,20 @@ function numpressed(value, cmd) {
         switch(parseState) {
             case ParseState.NUMBERSTART: //NUMBERSTART only accepts numeric values
                 if (isNaN(value)) return; 
-                else parseState = ParseState.NUMBEREND;
+                parseState = ParseState.NUMBEREND;
                 break;
             case ParseState.NUMBEREND: // NUMBEREND accepts any noncommand value (operation/number)
                 if (isNaN(value)) parseState = ParseState.NUMBERSTART;
                 break;
         }
-        input.innerHTML += value;
+        operation += value;
+        input.innerHTML = operation;
     }
 }
 
 // clear input
 function newExpression() {
-    input.innerHTML = "";
+    operation = "";
     parseState = ParseState.NUMBERSTART;
 }
 
